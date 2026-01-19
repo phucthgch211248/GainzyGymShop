@@ -179,6 +179,56 @@ const productController = {
     }
   ],
 
+  // @desc    Thêm ảnh sản phẩm
+  // @route   POST /api/products/:id/images
+  // @access  Private/Admin
+  addProductImages: async (req, res, next) => {
+    try {
+      const { images } = req.body;
+      if (!images || !Array.isArray(images) || images.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Danh sách URL hình ảnh là bắt buộc',
+        });
+      }
+      const product = await productService.addProductImages(req.params.id, images);
+      res.status(200).json({
+        success: true,
+        data: product,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  // @desc    Xóa ảnh sản phẩm
+  // @route   DELETE /api/products/:id/images
+  // @access  Private/Admin
+  deleteProductImages: async (req, res, next) => {
+    try {
+      const { images } = req.body;
+      if (!images || !Array.isArray(images) || images.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Danh sách URL hình ảnh là bắt buộc',
+        });
+      }
+      const product = await productService.deleteProductImages(req.params.id, images);
+      res.status(200).json({
+        success: true,
+        data: product,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
   // @desc    Xóa sản phẩm
   // @route   DELETE /api/products/:id
   // @access  Private/Admin

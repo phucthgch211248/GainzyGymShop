@@ -311,6 +311,50 @@ const productService = {
     return { message: 'Xóa sản phẩm thành công' };
   },
 
+  addProductImages: async (productId, imageUrls) => {
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw new Error('Sản phẩm không tồn tại');
+    }
+
+    if (!Array.isArray(imageUrls) || imageUrls.length === 0) {
+      throw new Error('Danh sách URL hình ảnh không hợp lệ');
+    }
+
+    // Thêm các URL mới vào mảng images (tránh trùng lặp)
+    const existingImages = product.images || [];
+    const newImages = imageUrls.filter(url => !existingImages.includes(url));
+    product.images = [...existingImages, ...newImages];
+
+    await product.save();
+    
+    return Product.findById(productId)
+      .populate('category', 'name slug')
+      .populate('brand', 'name slug');
+  },
+
+  deleteProductImages: async (productId, imageUrls) => {
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw new Error('Sản phẩm không tồn tại');
+    }
+
+    if (!Array.isArray(imageUrls) || imageUrls.length === 0) {
+      throw new Error('Danh sách URL hình ảnh không hợp lệ');
+    }
+
+    // Lọc bỏ các URL cần xóa khỏi mảng images
+    product.images = product.images.filter(
+      (img) => !imageUrls.includes(img)
+    );
+
+    await product.save();
+    
+    return Product.findById(productId)
+      .populate('category', 'name slug')
+      .populate('brand', 'name slug');
+  },
+
   updateStock: async (productId, quantity) => {
     const product = await Product.findById(productId);
     if (!product) {

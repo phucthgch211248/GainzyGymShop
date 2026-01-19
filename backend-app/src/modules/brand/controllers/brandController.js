@@ -82,6 +82,31 @@ const brandController = {
     }
   },
 
+  // @desc    Cập nhật ảnh thương hiệu
+  // @route   PUT /api/brands/:id/image
+  // @access  Private/Admin
+  updateBrandImage: async (req, res, next) => {
+    try {
+      const { image } = req.body;
+      if (!image) {
+        return res.status(400).json({
+          success: false,
+          message: 'URL hình ảnh là bắt buộc',
+        });
+      }
+      const brand = await brandService.updateBrandImage(req.params.id, image);
+      res.status(200).json({
+        success: true,
+        data: brand,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
   // @desc    Xóa thương hiệu
   // @route   DELETE /api/brands/:id
   // @access  Private/Admin

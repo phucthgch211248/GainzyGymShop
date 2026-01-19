@@ -95,7 +95,12 @@ const categoryService = {
 
   createCategory: async (categoryData) => {
     const validatedData = categoryValidator.validateCreate(categoryData);
-    const { name, description, image, images } = validatedData;
+    let { name, description, image, images } = validatedData;
+
+    // Nếu có images nhưng không có image, lấy ảnh đầu tiên làm image chính
+    if (!image && images && images.length > 0) {
+      image = images[0];
+    }
 
     const categoryExists = await Category.findOne({ name });
     if (categoryExists) {
@@ -136,6 +141,21 @@ const categoryService = {
     if (image) category.image = image;
     if (images !== undefined) category.images = images;
 
+    await category.save();
+    return category;
+  },
+
+  updateCategoryImage: async (categoryId, imageUrl) => {
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      throw new Error('Danh mục không tồn tại');
+    }
+    
+    if (!imageUrl || typeof imageUrl !== 'string' || imageUrl.trim() === '') {
+      throw new Error('URL hình ảnh không hợp lệ');
+    }
+    
+    category.image = imageUrl.trim();
     await category.save();
     return category;
   },

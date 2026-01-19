@@ -82,6 +82,31 @@ const categoryController = {
     }
   },
 
+  // @desc    Cập nhật ảnh danh mục
+  // @route   PUT /api/categories/:id/image
+  // @access  Private/Admin
+  updateCategoryImage: async (req, res, next) => {
+    try {
+      const { image } = req.body;
+      if (!image) {
+        return res.status(400).json({
+          success: false,
+          message: 'URL hình ảnh là bắt buộc',
+        });
+      }
+      const category = await categoryService.updateCategoryImage(req.params.id, image);
+      res.status(200).json({
+        success: true,
+        data: category,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
   // @desc    Xóa danh mục
   // @route   DELETE /api/categories/:id
   // @access  Private/Admin

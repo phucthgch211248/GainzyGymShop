@@ -4,7 +4,7 @@ const User = require('../modules/user/models/User');
 const protect = async (req, res, next) => {
   try {
     let token;
-
+      // 1. Lấy token từ header
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
     }
@@ -15,7 +15,7 @@ const protect = async (req, res, next) => {
         message: 'Không có quyền truy cập, vui lòng đăng nhập',
       });
     }
-
+      // 2. Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = await User.findById(decoded.id).select('-password');
 

@@ -13,6 +13,7 @@ const reviewRoutes = require('./modules/review/routes/reviewRoutes');
 const adminRoutes = require('./modules/admin/routes/adminRoutes');
 const brandRoutes = require('./modules/brand/routes/brandRoutes');
 const blogRoutes = require('./modules/blog/routes/blogRoutes');
+const chatbotRoutes = require('./modules/chatbot/routes/chatbotRoutes');
 const app = express();
 
 const corsOptions = {
@@ -44,6 +45,7 @@ app.use('/api/v1/reviews', reviewRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/brands', brandRoutes);
 app.use('/api/v1/blogs', blogRoutes);
+app.use('/api/v1/chatbot', chatbotRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

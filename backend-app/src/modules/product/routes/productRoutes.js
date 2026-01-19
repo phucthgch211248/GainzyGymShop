@@ -17,6 +17,8 @@ router.get('/', productController.getAllProducts);
 // Admin routes
 router.post('/', protect, authorize(ROLES.ADMIN), productController.createProduct);
 router.put('/:id', protect, authorize(ROLES.ADMIN), productController.updateProduct);
+router.post('/:id/images', protect, authorize(ROLES.ADMIN), productController.addProductImages);
+router.delete('/:id/images', protect, authorize(ROLES.ADMIN), productController.deleteProductImages);
 router.delete('/:id', protect, authorize(ROLES.ADMIN), productController.deleteProduct);
 
 module.exports = router;

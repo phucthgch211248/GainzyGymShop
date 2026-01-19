@@ -10,6 +10,7 @@ router.get('/:id', categoryController.getCategoryById);
 
 router.post('/', protect, authorize(ROLES.ADMIN), categoryController.createCategory);
 router.put('/:id', protect, authorize(ROLES.ADMIN), categoryController.updateCategory);
+router.put('/:id/image', protect, authorize(ROLES.ADMIN), categoryController.updateCategoryImage);
 router.delete('/:id', protect, authorize(ROLES.ADMIN), categoryController.deleteCategory);
 
 module.exports = router;

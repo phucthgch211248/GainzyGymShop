@@ -95,7 +95,7 @@ const brandService = {
 
   createBrand: async (brandData) => {
     const validatedData = brandValidator.validateCreate(brandData);
-    const { name, description, logo } = validatedData;
+    const { name, description, image } = validatedData;
 
     const brandExists = await Brand.findOne({ name });
     if (brandExists) {
@@ -105,7 +105,7 @@ const brandService = {
     const brand = await Brand.create({
       name,
       description,
-      logo,
+      image,
     });
 
     return brand;
@@ -118,7 +118,7 @@ const brandService = {
     }
     
     const validatedData = brandValidator.validateUpdate(updateData);
-    const { name, description, isActive, logo } = validatedData;
+    const { name, description, isActive, image } = validatedData;
 
     if (name) {
       const existingBrand = await Brand.findOne({
@@ -133,8 +133,23 @@ const brandService = {
 
     if (description !== undefined) brand.description = description;
     if (isActive !== undefined) brand.isActive = isActive;
-    if (logo) brand.logo = logo;
+    if (image !== undefined) brand.image = image;
 
+    await brand.save();
+    return brand;
+  },
+
+  updateBrandImage: async (brandId, imageUrl) => {
+    const brand = await Brand.findById(brandId);
+    if (!brand) {
+      throw new Error('Thương hiệu không tồn tại');
+    }
+    
+    if (!imageUrl || typeof imageUrl !== 'string' || imageUrl.trim() === '') {
+      throw new Error('URL hình ảnh không hợp lệ');
+    }
+    
+    brand.image = imageUrl.trim();
     await brand.save();
     return brand;
   },

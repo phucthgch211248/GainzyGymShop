@@ -16,8 +16,8 @@ const categoryValidator = {
       errors.push('Mô tả không được vượt quá 500 ký tự');
     }
 
-    // Regex URL đơn giản dùng lại cho image & images
-    const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?$/;
+    // Regex URL hỗ trợ Cloudinary và các URL có query params
+    const urlPattern = /^https?:\/\/.+$/i;
 
     // Kiểm tra image (ảnh chính)
     if (data.image) {
@@ -79,7 +79,8 @@ const categoryValidator = {
       errors.push('Mô tả không được vượt quá 500 ký tự');
     }
 
-    const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?$/;
+    // Regex URL hỗ trợ Cloudinary và các URL có query params
+    const urlPattern = /^https?:\/\/.+$/i;
 
     if (data.image) {
       if (!urlPattern.test(data.image)) {
