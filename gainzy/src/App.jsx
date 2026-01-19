@@ -23,6 +23,7 @@ import Tool from './pages/Tool'
 import Brand from './pages/Brand'
 import AdminOrders from './pages/admin/AdminOrders'
 import AdminPosts from './pages/admin/AdminPosts'
+import AdminReviews from './pages/admin/AdminReviews'
 import Blog from './pages/Blog'
 import BlogDetail from './pages/BlogDetail'
 import Checkout from './pages/Checkout'
@@ -66,6 +67,7 @@ function App() {
               <Route path="brands" element={<AdminBrands />} />
               <Route path="orders" element={<AdminOrders />} />
               <Route path="posts" element={<AdminPosts />} />
+              <Route path="reviews" element={<AdminReviews />} />
 
               <Route path="products/create" element={<AdminCreateProduct />} />
               <Route path="categories/create" element={<AdminCreateCategory />} />

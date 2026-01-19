@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../lib/apiClient'
@@ -6,9 +6,11 @@ import { toArray } from '../lib/normalize'
 
 export default function NavBar() {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const [progress, setProgress] = useState(0)
   const headerRef = useRef(null)
   const [cartCount, setCartCount] = useState(0)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const marqueeMsgs = useMemo(() => ([
     'FREE SHIPPING NATIONWIDE FOR ORDERS FROM $50',
@@ -112,6 +114,15 @@ export default function NavBar() {
     t.src = '/images/gainzy.png'
   }
 
+  const handleSearch = (e) => {
+    e.preventDefault()
+    const keyword = searchTerm.trim()
+    if (keyword) {
+      navigate(`/products?keyword=${encodeURIComponent(keyword)}`)
+      setSearchTerm('')
+    }
+  }
+
   return (
     <header ref={headerRef} className="fixed top-0 left-0 right-0 z-[120] w-full isolation-auto">
       <div className="bg-slate-950/60 backdrop-blur">
@@ -127,7 +138,7 @@ export default function NavBar() {
                   ))}
                 </div>
               </div>
-
+                  {/* responsive */}
               <div className="flex flex-wrap items-center gap-5">
                 <Link to="/" className="flex items-center gap-3 pr-6">
                   <img src="/images/gainzy.png" alt="Gainzy" className="h-12 w-auto rounded-xl border border-white/20 bg-white/15 p-1.5 shadow" />
@@ -135,16 +146,21 @@ export default function NavBar() {
                 </Link>
 
                 <div className="min-w-[240px] flex-1">
-                  <div className="relative">
+                  <form onSubmit={handleSearch} className="relative">
                     <input
                       type="search"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
                       placeholder="Search..."
                       className="w-full rounded-full border border-white/10 bg-white/95 py-2.5 pl-4 pr-32 text-gray-900 shadow-sm transition focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-300"
                     />
-                    <button className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-black/20 transition hover:bg-slate-800 active:scale-[0.97]">
+                    <button 
+                      type="submit"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-black/20 transition hover:bg-slate-800 active:scale-[0.97]"
+                    >
                       Search
                     </button>
-                  </div>
+                  </form>
                 </div>
 
                 <div className="flex items-center gap-3">

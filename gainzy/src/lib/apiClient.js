@@ -18,7 +18,7 @@ const client = axios.create({
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
 });
-
+// Tự động thêm token vào mọi request
 client.interceptors.request.use((config) => {
   const token = getToken();
   if (token) {
@@ -192,6 +192,14 @@ export const api = {
     create: (payload) => request('post', '/blogs', { data: payload }),
     update: (id, payload) => request('put', `/blogs/${id}`, { data: payload }),
     remove: (id) => request('delete', `/blogs/${id}`),
+  },
+  chatbot: {
+    sendMessage: (message, conversationHistory = []) => request('post', '/chatbot/message', { 
+      data: { message, conversationHistory } 
+    }),
+    handleConversation: (messages) => request('post', '/chatbot/conversation', { 
+      data: { messages } 
+    }),
   },
 };
 

@@ -61,6 +61,13 @@ export default function AdminOrders() {
   };
 
   const onChangeStatus = async (id, next) => {
+    // Kiểm tra nếu chọn "cancelled" nhưng đã thanh toán thì không cho phép
+    const currentPaymentStatus = edits[id]?.paymentStatus;
+    if (next === 'cancelled' && currentPaymentStatus === 'paid') {
+      showToast('Không thể hủy đơn hàng đã thanh toán!', 'error');
+      return;
+    }
+    
     const prev = edits[id]?.status;
     setEdit(id, { status: next });
     setSavingStatus((s) => ({ ...s, [id]: true }));
@@ -157,7 +164,16 @@ export default function AdminOrders() {
                           disabled={!!savingStatus[id]}
                           className="border rounded-lg px-2 py-1 text-sm disabled:opacity-50"
                         >
-                          {ORDER_STATUS_KEYS.map(s => <option key={s} value={s}>{orderStatusLabel(s)}</option>)}
+                          {ORDER_STATUS_KEYS.map(s => {
+                            const isCancelled = s === 'cancelled';
+                            const isPaid = (edits[id]?.paymentStatus || o.paymentStatus || (o.paid ? 'paid' : 'pending')) === 'paid';
+                            const isDisabled = isCancelled && isPaid;
+                            return (
+                              <option key={s} value={s} disabled={isDisabled}>
+                                {orderStatusLabel(s)}
+                              </option>
+                            );
+                          })}
                         </select>
                       </td>
                       <td className="px-4 py-3 border-b">

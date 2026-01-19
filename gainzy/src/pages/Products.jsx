@@ -37,7 +37,7 @@ export default function Products() {
       query.set('sort', sort);
       if (minPrice != null) query.set('minPrice', String(minPrice));
       if (q.get('category')) query.set('category', q.get('category'));
-      if (q.get('keyword')) query.set('keyword', q.get('keyword'));
+      if (q.get('keyword')) query.set('search', q.get('keyword'));
 
       let res;
       if (effect) {

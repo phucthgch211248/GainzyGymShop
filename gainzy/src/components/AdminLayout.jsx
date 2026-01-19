@@ -11,7 +11,8 @@ import {
   ChevronLeft,
   Sparkles,
   Receipt,
-  FileText
+  FileText,
+  MessageSquare
 } from 'lucide-react';
 
 export default function AdminLayout() {
@@ -26,6 +27,7 @@ export default function AdminLayout() {
     { path: '/admin/brands', icon: Package, label: 'Brand Management', short: 'Brands', color: 'blue' },
     { path: '/admin/orders', icon: Receipt, label: 'Order Management', short: 'Orders', color: 'emerald' },
     { path: '/admin/posts', icon: FileText, label: 'Post Management', short: 'Posts', color: 'rose' },
+    { path: '/admin/reviews', icon: MessageSquare, label: 'Review Management', short: 'Reviews', color: 'amber' },
   ];
 
   const isActive = (path) => location.pathname.startsWith(path);

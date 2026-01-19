@@ -24,8 +24,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    await api.auth.login({ email, password });
-    const me = await api.auth.me();
+    await api.auth.login({ email, password });// Nhận token
+    const me = await api.auth.me();// Lấy thông tin user
     setUser(me ?? null);
     return me ?? null;
   };

@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { api } from '../../lib/apiClient';
+import { uploadImages } from '../../lib/cloudinary';
 import { toArray } from '../../lib/normalize';
-import { ShoppingBag, Plus, Pencil, Trash2, Search, Loader2, X, Check } from 'lucide-react';
+import { ShoppingBag, Plus, Pencil, Trash2, Search, Loader2, X, Check, Upload, Image as ImageIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Toast from '../../components/Toast.jsx';
 
@@ -65,6 +66,8 @@ export default function AdminProducts() {
   const [brands, setBrands] = useState([]);
   const [toast, setToast] = useState(null);
   const [removedImages, setRemovedImages] = useState([]);
+  const [newFiles, setNewFiles] = useState([]);
+  const [newPreviews, setNewPreviews] = useState([]);
 
   const abortControllerRef = useRef(null);
   const searchTimeoutRef = useRef(null);
@@ -161,9 +164,16 @@ export default function AdminProducts() {
       selectedEffects: selected,
     });
     setRemovedImages([]);
+    setNewFiles([]);
+    setNewPreviews([]);
   };
 
-  const closeEdit = () => { setEditing(null); setRemovedImages([]); };
+  const closeEdit = () => { 
+    setEditing(null); 
+    setRemovedImages([]); 
+    setNewFiles([]);
+    setNewPreviews([]);
+  };
 
   const saveEdit = async () => {
     if (!editing?.id) return;
@@ -241,6 +251,11 @@ export default function AdminProducts() {
         await api.products.deleteImages(editing.id, removedImages);
       }
 
+      if (newFiles.length > 0) {
+        const uploadedUrls = await uploadImages(newFiles);
+        await api.products.addImages(editing.id, uploadedUrls);
+      }
+
       showToast('Cập nhật sản phẩm thành công!');
       closeEdit();
       fetchData();
@@ -286,6 +301,34 @@ export default function AdminProducts() {
   const removeExistingImage = (url) => {
     setEditing((prev) => ({ ...prev, images: toArray(prev.images).filter((u) => u !== url) }));
     setRemovedImages((prev) => (prev.includes(url) ? prev : [...prev, url]));
+  };
+
+  const onNewFilesChange = (e) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    if (selectedFiles.length === 0) return;
+
+    const allFiles = [...newFiles, ...selectedFiles];
+    setNewFiles(allFiles);
+
+    const readers = selectedFiles.map(
+      (file) =>
+        new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        })
+    );
+
+    Promise.all(readers).then((newPreviewsData) => {
+      setNewPreviews((prev) => [...prev, ...newPreviewsData]);
+    });
+  };
+
+  const removeNewImage = (index) => {
+    const newFilesList = newFiles.filter((_, i) => i !== index);
+    const newPreviewsList = newPreviews.filter((_, i) => i !== index);
+    setNewFiles(newFilesList);
+    setNewPreviews(newPreviewsList);
   };
 
   return (
@@ -529,6 +572,57 @@ export default function AdminProducts() {
               )}
               {removedImages.length > 0 && (
                 <div className="text-xs text-red-600 mt-2">Sẽ xóa {removedImages.length} ảnh sau khi lưu.</div>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Thêm ảnh mới
+              </label>
+              <div className="relative">
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  multiple 
+                  onChange={onNewFilesChange} 
+                  className="hidden" 
+                  id="new-files-upload" 
+                />
+                <label
+                  htmlFor="new-files-upload"
+                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 transition-all duration-200 cursor-pointer bg-gray-50 hover:bg-purple-50 group"
+                >
+                  <Upload className="w-8 h-8 text-gray-400 group-hover:text-purple-500 transition-colors mb-2" />
+                  <p className="text-sm text-gray-600 group-hover:text-purple-600 font-medium">
+                    Click để thêm ảnh mới
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">PNG, JPG, GIF - Có thể chọn nhiều ảnh</p>
+                </label>
+              </div>
+              {newPreviews.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                  {newPreviews.map((preview, idx) => (
+                    <div key={idx} className="relative group border rounded-lg overflow-hidden">
+                      <img src={preview} alt={`New ${idx+1}`} className="w-full h-28 object-cover" />
+                      <button 
+                        type="button" 
+                        onClick={() => removeNewImage(idx)} 
+                        className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        Xóa
+                      </button>
+                      <div className="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                        Mới {idx + 1}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {newFiles.length > 0 && (
+                <p className="text-sm text-gray-600 flex items-center gap-2 mt-2">
+                  <ImageIcon className="w-4 h-4 text-purple-500" />
+                  Đã chọn {newFiles.length} ảnh mới
+                </p>
               )}
             </div>
             
